@@ -298,7 +298,8 @@ module ActiveRecord
         def sql_for_insert(sql, pk, id_value, sequence_name, binds)
           sql =
             if pk
-              sql.insert(sql.index(/ (DEFAULT )?VALUES/), " OUTPUT inserted.*")
+              pk_ary = Array.wrap(pk).map{|k| "inserted.[#{k.strip}]"}
+              sql.insert(sql.index(/ (DEFAULT )?VALUES/), " OUTPUT #{pk_ary.join(',')}")
             else
               "#{sql}; SELECT CAST(SCOPE_IDENTITY() AS bigint) AS Ident"
             end
